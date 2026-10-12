@@ -10,7 +10,8 @@ chests for you.
 
 1. **Craft and build from nearby chests.** Workbench/forge recipes, upgrades, and hammer builds
    can use materials sitting in chests within reach (30 m by default). The requirement counts in the
-   crafting panel and build menu include those chests. Items you carry are spent first. After that the
+   crafting panel and build menu include those chests, and show what you have next to what's needed
+   (`312/5`). Items you carry are spent first. After that the
    rest comes from the closest chests.
 2. **Feed stations from chests.** Coal and ore into smelters and kilns, wood into fires and
    hearths, fuel into cooking stations and ovens. If you're not carrying it, it comes out of a nearby
@@ -128,6 +129,7 @@ After the first launch, settings are in `BepInEx\config\NearbyChests.cfg`:
 | Crafting | CraftFromChests      | true             | Use chest materials at crafting stations. |
 | Crafting | BuildFromChests      | true             | Use chest materials when building. |
 | Crafting | StationsFromChests   | true             | Take fuel and ore from chests when feeding smelters, kilns, fires and cooking stations. Food and mead stay manual. |
+| Crafting | ShowAvailableCounts  | true             | Show materials as have/needed in the crafting panel and build menu, counting nearby chests. |
 | Stacking | StackingRange        | 15               | Distance in meters a chest can be and still be used by Stack, Tidy and sorting (3–60). |
 | Stacking | StackToNearby        | true             | Stack button pushes to all nearby chests. Turn off for the vanilla button. |
 | Stacking | KeepHotbar           | true             | Never stack items from the top row. |

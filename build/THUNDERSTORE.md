@@ -6,7 +6,8 @@ Client-side only: nobody else on the server needs it.
 ## What it does
 
 - **Craft and build from nearby chests.** Recipes, upgrades and hammer builds count materials in
-  chests within 30 m. What you carry is spent first, then the closest chests.
+  chests within 30 m. What you carry is spent first, then the closest chests. Materials show what
+  you have next to what's needed (`312/5`), chests included.
 - **Feed stations from chests.** Coal and ore into smelters and kilns, wood into fires, fuel into
   cooking stations. One press adds one item, the same as vanilla. Food and mead stay manual.
 - **Stack puts everything away.** Press **Stack** with a chest open, or hold **E** on a chest, and

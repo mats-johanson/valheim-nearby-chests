@@ -1,4 +1,6 @@
 using HarmonyLib;
+using TMPro;
+using UnityEngine;
 
 namespace NearbyChests
 {
@@ -59,9 +61,34 @@ namespace NearbyChests
             if (craft) Scope.Craft++; else Scope.Build++;
         }
 
+        // Vanilla shows only the amount needed. Show have/needed instead. Postfixes run before the
+        // finalizer, so the count scope is still open and CountItems includes nearby chests.
+        private static void Postfix(Transform elementRoot, Piece.Requirement req, Player player, int quality,
+            int craftMultiplier, bool __result)
+        {
+            if (!__result || !Plugin.ShowAvailableCounts.Value || req.m_resItem == null || player == null)
+                return;
+            int needed = req.GetAmount(quality) * craftMultiplier;
+            TMP_Text amount = elementRoot.Find("res_amount")?.GetComponent<TMP_Text>();
+            if (needed <= 0 || amount == null)
+                return;
+            int have = player.GetInventory().CountItems(req.m_resItem.m_itemData.m_shared.m_name);
+            amount.text = $"{Compact(have)}/{needed}";
+        }
+
         private static void Finalizer(bool craft)
         {
             if (craft) Scope.Craft--; else Scope.Build--;
+        }
+
+        /// <summary>Keep big piles short enough for the small amount box: 1240 -> 1.2k, 31500 -> 31k.</summary>
+        private static string Compact(int n)
+        {
+            if (n < 1000)
+                return n.ToString();
+            if (n < 10000)
+                return (n / 1000f).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + "k";
+            return (n / 1000) + "k";
         }
     }
 

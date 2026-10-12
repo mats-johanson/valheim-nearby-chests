@@ -3,6 +3,13 @@
 Notable changes in each release. The section for a tagged version becomes that release's notes on
 GitHub, so keep the headings as `## <version> - <date>`.
 
+## 1.1.1 - 2026-10-12
+
+**See what you have.** Materials in the crafting panel and build menu now show what you have next to
+what's needed, for example `312/5`, counting nearby chests as well as your inventory. Large piles are
+shortened (`1240` shows as `1.2k`) so they fit. New `ShowAvailableCounts` setting, on by default;
+turn it off for the vanilla needed-only number.
+
 ## 1.1.0 - 2026-09-23
 
 **Ignore a slot.** Middle-click a slot in your inventory and Stack leaves it alone. A pin in the

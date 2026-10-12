@@ -13,7 +13,7 @@ namespace NearbyChests
     {
         public const string Guid = "NearbyChests";
         public const string ModName = "Nearby Chests";
-        public const string Version = "1.1.0";
+        public const string Version = "1.1.1";
 
         internal static ManualLogSource Log;
 
@@ -24,6 +24,7 @@ namespace NearbyChests
         internal static ConfigEntry<bool> CraftFromChests;
         internal static ConfigEntry<bool> BuildFromChests;
         internal static ConfigEntry<bool> StationsFromChests;
+        internal static ConfigEntry<bool> ShowAvailableCounts;
 
         internal static ConfigEntry<bool> StackToNearby;
         internal static ConfigEntry<bool> KeepHotbar;
@@ -66,6 +67,9 @@ namespace NearbyChests
                 "coal and ore into smelters and kilns, wood into fires, fuel into cooking stations. " +
                 "One press still adds one item, as in vanilla. Food and mead stay manual, because a " +
                 "cooking station or fermenter takes several different items and the mod would pick for you.");
+            ShowAvailableCounts = Config.Bind("Crafting", "ShowAvailableCounts", true,
+                "Show how many of each material you have next to how many are needed, as have/needed, " +
+                "in the crafting panel and build menu. The count includes nearby chests.");
 
             StackingRange = Config.Bind("Stacking", "StackingRange", 15f,
                 new ConfigDescription("How far (in meters) a chest can be and still be used by Stack, Tidy and sorting.",
