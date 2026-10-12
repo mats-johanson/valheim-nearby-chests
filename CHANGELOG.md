@@ -3,6 +3,20 @@
 Notable changes in each release. The section for a tagged version becomes that release's notes on
 GitHub, so keep the headings as `## <version> - <date>`.
 
+## 1.1.2 - 2026-10-12
+
+**Stack and Tidy leave the Obliterator alone.** Pressing Place stacks with the Obliterator open could
+send items into it that you never meant to destroy: new materials went into it as if it were an
+empty chest, and items from the same group as what you'd put in (Flint with Stone) were sent to it
+as their "similar" chest. Stack on the Obliterator or a gravestone now does the vanilla stack, so
+only items already inside go in, and the Tidy button is hidden there so it can't pull items in
+from your chests.
+
+**Put leftovers anywhere.** New `FallbackToAnyChest` setting, off by default. When an item has no
+similar chest, no empty chest and no shared chest, it goes into any nearby chest with room instead
+of staying in your inventory. Holding Use on a chest then puts everything away; run Tidy later to
+sort out the mix. ([#1](https://github.com/timothydodd/valheim-nearby-chests/issues/1))
+
 ## 1.1.1 - 2026-10-12
 
 **See what you have.** Materials in the crafting panel and build menu now show what you have next to

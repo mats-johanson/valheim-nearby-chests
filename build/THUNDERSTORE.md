@@ -40,6 +40,7 @@ change:
 | `IncludeCartsAndShips` | false | Also use cart and ship storage. |
 | `ExcludeFood`, `ExcludeAmmo`, `ExcludeEquipment` | true | Keep food, ammo and gear in your inventory when stacking. |
 | `KeepHotbar` | true | Never stack items from the top row. |
+| `FallbackToAnyChest` | false | Put items with no matching chest into any nearby chest with room, instead of leaving them with you. |
 | `PullBuildMaterialsKey` | Ctrl + left click | The key that pulls build materials. |
 
 Which items count as "similar" is a plain text file, `BepInEx\config\NearbyChests.groups.txt`, one

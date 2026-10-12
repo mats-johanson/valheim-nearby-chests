@@ -32,7 +32,7 @@ namespace NearbyChests
         public static void TidyChest(Container opened)
         {
             Player player = Player.m_localPlayer;
-            if (player == null || opened == null || !ChestFinder.EnsureOwner(opened))
+            if (player == null || opened == null || ChestFinder.IsDisposal(opened) || !ChestFinder.EnsureOwner(opened))
                 return;
 
             ItemGroups.ReloadIfChanged();
@@ -383,6 +383,14 @@ namespace NearbyChests
 
         private static void Postfix(InventoryGui __instance)
         {
+            // No Tidy on the Obliterator or a gravestone: it would pull matching items into them.
+            if (Button != null)
+            {
+                bool show = !ChestFinder.IsDisposal(__instance.m_currentContainer);
+                if (Button.gameObject.activeSelf != show)
+                    Button.gameObject.SetActive(show);
+            }
+
             if (Placed || Button == null || __instance.m_container == null
                 || !__instance.m_container.gameObject.activeInHierarchy)
                 return;

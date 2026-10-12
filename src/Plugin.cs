@@ -13,7 +13,7 @@ namespace NearbyChests
     {
         public const string Guid = "NearbyChests";
         public const string ModName = "Nearby Chests";
-        public const string Version = "1.1.1";
+        public const string Version = "1.1.2";
 
         internal static ManualLogSource Log;
 
@@ -34,6 +34,7 @@ namespace NearbyChests
         internal static ConfigEntry<bool> PlaceUnassignedItems;
         internal static ConfigEntry<string> UnassignedItemTypes;
         internal static ConfigEntry<bool> FallbackToOpenChest;
+        internal static ConfigEntry<bool> FallbackToAnyChest;
         internal static ConfigEntry<bool> SortAfterStack;
         internal static ConfigEntry<bool> TidyButton;
         internal static ConfigEntry<bool> TidyGathers;
@@ -96,6 +97,10 @@ namespace NearbyChests
             FallbackToOpenChest = Config.Bind("Stacking", "FallbackToOpenChest", false,
                 "If an unassigned item has no similar chest and there is no empty chest, put it in the chest you have open. " +
                 "When off, it stays in your inventory.");
+            FallbackToAnyChest = Config.Bind("Stacking", "FallbackToAnyChest", false,
+                "If an item still has nowhere to go after every other rule, put it in any nearby chest with room " +
+                "(the open chest first, then the nearest) instead of leaving it in your inventory. " +
+                "Gets everything put away, at the cost of mixing items into chests of other categories; Tidy sorts them out later.");
             SortAfterStack = Config.Bind("Stacking", "SortAfterStack", true,
                 "Sort and merge the contents of every chest that received items.");
             ShareChests = Config.Bind("Stacking", "ShareChests", true,

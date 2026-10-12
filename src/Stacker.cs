@@ -71,7 +71,9 @@ namespace NearbyChests
             foreach (Container c in touched)
                 InventoryGui.instance.m_moveItemEffects.Create(c.transform.position, Quaternion.identity);
 
-            string note = homeless > 0 ? $"\n{homeless} items had no similar or empty chest" : "";
+            string note = homeless == 0 ? ""
+                : Plugin.FallbackToAnyChest.Value ? $"\n{homeless} items didn't fit in any nearby chest"
+                : $"\n{homeless} items had no similar or empty chest";
             if (moved > 0)
             {
                 string where = touched.Count == 1 ? "1 chest" : touched.Count + " chests";
@@ -90,7 +92,8 @@ namespace NearbyChests
         ///    or, for items in no group at all, the catch-all chest,
         /// 2. otherwise an empty chest (the open one if it's empty, then the nearest),
         /// 3. otherwise a chest holding only one other group, which becomes a shared chest,
-        /// 4. otherwise, if enabled, the open chest.
+        /// 4. otherwise, if enabled, the open chest,
+        /// 5. otherwise, if enabled, any chest with room.
         /// </summary>
         private static int PlaceUnassigned(ItemDrop.ItemData item, Inventory from, List<Container> chests,
             Container opened, HashSet<Container> touched)
@@ -135,7 +138,22 @@ namespace NearbyChests
             }
 
             if (Plugin.FallbackToOpenChest.Value)
+            {
                 moved += MoveInto(opened, item, from, touched);
+                if (!from.ContainsItem(item))
+                    return moved;
+            }
+
+            // Last resort: any chest with room, the open one first, then nearest.
+            if (Plugin.FallbackToAnyChest.Value)
+            {
+                foreach (Container c in chests)
+                {
+                    moved += MoveInto(c, item, from, touched);
+                    if (!from.ContainsItem(item))
+                        return moved;
+                }
+            }
             return moved;
         }
 
@@ -322,7 +340,7 @@ namespace NearbyChests
         private static bool Prefix(InventoryGui __instance)
         {
             if (!Plugin.StackToNearby.Value || Player.m_localPlayer == null || Player.m_localPlayer.IsTeleporting()
-                || __instance.m_currentContainer == null)
+                || __instance.m_currentContainer == null || ChestFinder.IsDisposal(__instance.m_currentContainer))
                 return true;
 
             __instance.SetupDragItem(null, null, 1);
@@ -337,7 +355,8 @@ namespace NearbyChests
     {
         private static bool Prefix(Container __instance, bool granted)
         {
-            if (!Plugin.StackToNearby.Value || !granted || Player.m_localPlayer == null)
+            if (!Plugin.StackToNearby.Value || !granted || Player.m_localPlayer == null
+                || ChestFinder.IsDisposal(__instance))
                 return true;
 
             Stacker.StackFromPlayer(__instance);

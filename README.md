@@ -33,7 +33,8 @@ chests for you.
    3. **A shared chest.** Out of empty chests? A chest holding only one group takes this item's group
       as a second one, preferring a related group.
    4. **Your inventory.** If there's still nowhere to go, the item stays with you, and the on-screen
-      message tells you how many were left over.
+      message tells you how many were left over. Turn on `FallbackToAnyChest` to put leftovers in
+      any nearby chest with room instead.
 5. **Tidy chests.** Every chest that receives items gets its partial stacks merged and its
    contents sorted by type, then group, then name.
 6. **Tidy button.** The chest window gets a small **Tidy** icon (three bars) just left of Place
@@ -77,6 +78,9 @@ Stacking leaves these in your inventory. Each has its own setting, and all are o
 Chests the mod never touches:
 - The Obliterator.
 - Gravestones.
+
+Pressing Stack with the Obliterator or a gravestone open does the vanilla stack (only items it
+already holds go in), and the Tidy button is hidden there.
 - Dungeon loot chests.
 - Chests another player has open.
 - Chests you can't open yourself (private, or behind someone else's ward).
@@ -139,6 +143,7 @@ After the first launch, settings are in `BepInEx\config\NearbyChests.cfg`:
 | Stacking | PlaceUnassignedItems | true             | Items with no home go to a chest of similar items, or an empty chest. |
 | Stacking | UnassignedItemTypes  | Material,Trophy  | Item types placed even when not in the groups file. They share the catch-all chest. Other options: Consumable, Ammo, AmmoNonEquipable, Fish, Misc. |
 | Stacking | FallbackToOpenChest  | false            | If there's no similar or empty chest, use the open chest instead of leaving items in your inventory. |
+| Stacking | FallbackToAnyChest   | false            | If an item still has nowhere to go, put it in any nearby chest with room instead of leaving it in your inventory. |
 | Stacking | SortAfterStack       | true             | Sort and merge chests that received items. |
 | Stacking | ShareChests          | true             | When a group has no chest and there's no empty chest, let a one-group chest take a second, related group. |
 | Stacking | TidyButton           | true             | Show the Tidy button in the chest window (restart to apply). |
@@ -209,7 +214,10 @@ button) and `Container.RPC_StackResponse` (holding Use on a chest). For each eli
 2. fills the chest holding the most items from the same group (`ItemGroups.cs`), or, for items in no
    group, the catch-all chest (the one that's mostly ungrouped items),
 3. fills an empty chest, which becomes that group's chest - or the catch-all chest - from then on,
-4. optionally falls back to the open chest (`FallbackToOpenChest`).
+4. optionally falls back to the open chest (`FallbackToOpenChest`),
+5. optionally falls back to any chest with room (`FallbackToAnyChest`).
+
+With the Obliterator or a gravestone open, both patches step aside and the vanilla stack runs.
 
 Chests that received items are then merged and sorted by type, group order, name, quality and stack
 size.

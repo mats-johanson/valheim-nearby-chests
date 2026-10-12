@@ -64,8 +64,7 @@ namespace NearbyChests
             if ((c.transform.position - playerPos).sqrMagnitude > rangeSq)
                 return false;
 
-            // Never touch the Obliterator or gravestones.
-            if (c.GetComponentInParent<Incinerator>() != null || c.GetComponentInParent<TombStone>() != null)
+            if (IsDisposal(c))
                 return false;
 
             bool isVehicle = c.m_wagon != null || c.GetComponentInParent<Ship>() != null;
@@ -93,6 +92,13 @@ namespace NearbyChests
 
             return true;
         }
+
+        /// <summary>
+        /// The Obliterator or a gravestone. Never used as storage: anything put in the Obliterator is
+        /// destroyed, and a gravestone is only for getting your things back.
+        /// </summary>
+        public static bool IsDisposal(Container c) =>
+            c != null && (c.GetComponentInParent<Incinerator>() != null || c.GetComponentInParent<TombStone>() != null);
 
         /// <summary>
         /// Make sure we own the chest's network object so our changes save and sync.
