@@ -17,6 +17,8 @@ namespace NearbyChests
             Player player = Player.m_localPlayer;
             if (player == null || opened == null)
                 return;
+            if (!ChestFinder.CanUseOpened(opened, player))
+                return;
 
             Inventory playerInv = player.GetInventory();
 
@@ -137,7 +139,7 @@ namespace NearbyChests
                     return moved;
             }
 
-            if (Plugin.FallbackToOpenChest.Value)
+            if (Plugin.FallbackToOpenChest.Value && ChestSelection.Allows(opened))
             {
                 moved += MoveInto(opened, item, from, touched);
                 if (!from.ContainsItem(item))
@@ -251,6 +253,8 @@ namespace NearbyChests
         /// <summary>Move as much of <paramref name="item"/> as fits into the chest. Returns the count moved.</summary>
         internal static int MoveInto(Container chest, ItemDrop.ItemData item, Inventory from, HashSet<Container> touched)
         {
+            if (!ChestSelection.Allows(chest))
+                return 0;
             Inventory to = chest.GetInventory();
             if (!to.HaveEmptySlot() && to.FindFreeStackSpace(item.m_shared.m_name, item.m_worldLevel) <= 0)
                 return 0;
@@ -339,9 +343,12 @@ namespace NearbyChests
     {
         private static bool Prefix(InventoryGui __instance)
         {
-            if (!Plugin.StackToNearby.Value || Player.m_localPlayer == null || Player.m_localPlayer.IsTeleporting()
+            if (Player.m_localPlayer == null
                 || __instance.m_currentContainer == null || ChestFinder.IsDisposal(__instance.m_currentContainer))
                 return true;
+
+            if (!Plugin.StackToNearby.Value || Player.m_localPlayer.IsTeleporting())
+                return ChestFinder.CanUseOpened(__instance.m_currentContainer, Player.m_localPlayer);
 
             __instance.SetupDragItem(null, null, 1);
             Stacker.StackFromPlayer(__instance.m_currentContainer);
@@ -355,9 +362,12 @@ namespace NearbyChests
     {
         private static bool Prefix(Container __instance, bool granted)
         {
-            if (!Plugin.StackToNearby.Value || !granted || Player.m_localPlayer == null
+            if (!granted || Player.m_localPlayer == null
                 || ChestFinder.IsDisposal(__instance))
                 return true;
+
+            if (!Plugin.StackToNearby.Value)
+                return ChestFinder.CanUseOpened(__instance, Player.m_localPlayer);
 
             Stacker.StackFromPlayer(__instance);
             return false;
