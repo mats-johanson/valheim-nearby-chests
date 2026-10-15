@@ -32,6 +32,7 @@ namespace NearbyChests
         internal static ConfigEntry<bool> ExcludeAmmo;
         internal static ConfigEntry<bool> ExcludeEquipment;
         internal static ConfigEntry<bool> PlaceUnassignedItems;
+        internal static ConfigEntry<bool> DontFillEmptyChests;
         internal static ConfigEntry<string> UnassignedItemTypes;
         internal static ConfigEntry<bool> FallbackToOpenChest;
         internal static ConfigEntry<bool> FallbackToAnyChest;
@@ -86,6 +87,9 @@ namespace NearbyChests
                 "Never stack arrows, bolts, bait or other ammo you're carrying.");
             ExcludeEquipment = Config.Bind("Stacking", "ExcludeEquipment", true,
                 "Never stack weapons, armor, shields, tools, torches, utility items or trinkets.");
+            DontFillEmptyChests = Config.Bind("Stacking", "DontFillEmptyChests", false,
+                "Don't automatically put items into completely empty chests. " +
+                "Manual deposits are still allowed. Takes effect immediately.");
             PlaceUnassignedItems = Config.Bind("Stacking", "PlaceUnassignedItems", true,
                 "Items that no nearby chest holds yet go to the chest with the most similar items " +
                 "(metals with metals, hides with hides, same biome...), or into an empty chest if none match. " +

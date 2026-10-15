@@ -121,13 +121,16 @@ namespace NearbyChests
                     return moved;
             }
 
-            foreach (Container c in chests)
+            if (!Plugin.DontFillEmptyChests.Value)
             {
-                if (c.GetInventory().NrOfItems() != 0)
-                    continue;
-                moved += MoveInto(c, item, from, touched);
-                if (!from.ContainsItem(item))
-                    return moved;
+                foreach (Container c in chests)
+                {
+                    if (c.GetInventory().NrOfItems() != 0)
+                        continue;
+                    moved += MoveInto(c, item, from, touched);
+                    if (!from.ContainsItem(item))
+                        return moved;
+                }
             }
 
             if (Plugin.ShareChests.Value)
@@ -252,6 +255,8 @@ namespace NearbyChests
         internal static int MoveInto(Container chest, ItemDrop.ItemData item, Inventory from, HashSet<Container> touched)
         {
             Inventory to = chest.GetInventory();
+            if (Plugin.DontFillEmptyChests.Value && to.NrOfItems() == 0)
+                return 0;
             if (!to.HaveEmptySlot() && to.FindFreeStackSpace(item.m_shared.m_name, item.m_worldLevel) <= 0)
                 return 0;
             if (!ChestFinder.EnsureOwner(chest))

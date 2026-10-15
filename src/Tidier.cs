@@ -206,7 +206,8 @@ namespace NearbyChests
         /// <summary>Start a new chest for the item's group in the nearest empty chest.</summary>
         internal static int MoveToEmptyChest(ItemDrop.ItemData item, Inventory from,
             IEnumerable<Container> candidates, HashSet<Container> touched) =>
-            MoveIntoFirst(item, from, candidates.Where(c => c.GetInventory().NrOfItems() == 0).ToList(), touched);
+            Plugin.DontFillEmptyChests.Value ? 0 :
+                MoveIntoFirst(item, from, candidates.Where(c => c.GetInventory().NrOfItems() == 0).ToList(), touched);
 
         /// <summary>
         /// Add the item's group to a chest that holds only one other group, turning it into a shared
