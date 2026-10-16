@@ -111,8 +111,8 @@ namespace NearbyChests
             _toggle = row.GetComponent<Toggle>();
             _toggle.targetGraphic = background;
             _toggle.graphic = checkImage;
-            // Keep the toggle out of gamepad navigation so it can't take focus from the chest grid.
-            _toggle.navigation = new Navigation { mode = Navigation.Mode.None };
+            // Default (automatic) navigation leaves it reachable on a gamepad. Refresh deactivates the
+            // whole row when OnlyUseMarkedChests is off, which also removes it from navigation.
             _toggle.onValueChanged.AddListener(value =>
             {
                 Container c = __instance.m_currentContainer;
