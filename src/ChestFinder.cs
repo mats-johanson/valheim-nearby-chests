@@ -18,7 +18,28 @@ namespace NearbyChests
         private static Vector3 _cachedPos;
         private static float _cachedRange = -1f;
 
-        public static void Register(Container container) => Known.Add(container);
+        public static void Register(Container container)
+        {
+            if (Known.Add(container))
+                Invalidate();
+        }
+
+        internal static bool CanUseOpened(Container c, Player player)
+        {
+            if (!Plugin.OnlyUseMarkedChests.Value)
+                return true;
+            if (player == null)
+                return false;
+            if (IsUsable(c, player.transform.position,
+                Plugin.StackingRange.Value * Plugin.StackingRange.Value,
+                Game.instance.GetPlayerProfile().GetPlayerID()))
+                return true;
+
+            player.Message(MessageHud.MessageType.Center, !ChestSelection.Allows(c)
+                ? "This chest is not marked. Tick Include in NearbyChests to use Stack or Tidy."
+                : "This chest is not eligible for NearbyChests. Check its range, access and storage settings.");
+            return false;
+        }
 
         /// <summary>Drop cached results so the next query rescans.</summary>
         public static void Invalidate()
@@ -60,6 +81,8 @@ namespace NearbyChests
         private static bool IsUsable(Container c, Vector3 playerPos, float rangeSq, long playerId)
         {
             if (c == null || c.m_nview == null || !c.m_nview.IsValid() || c.GetInventory() == null)
+                return false;
+            if (!ChestSelection.Allows(c))
                 return false;
             if ((c.transform.position - playerPos).sqrMagnitude > rangeSq)
                 return false;
@@ -106,6 +129,8 @@ namespace NearbyChests
         /// </summary>
         public static bool EnsureOwner(Container c)
         {
+            if (c == null || c.m_nview == null || !c.m_nview.IsValid() || !ChestSelection.Allows(c))
+                return false;
             if (c.m_nview.IsOwner())
                 return true;
             if (c.m_nview.GetZDO().GetInt(ZDOVars.s_inUse) == 1)

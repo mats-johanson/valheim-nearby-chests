@@ -32,7 +32,8 @@ namespace NearbyChests
         public static void TidyChest(Container opened)
         {
             Player player = Player.m_localPlayer;
-            if (player == null || opened == null || ChestFinder.IsDisposal(opened) || !ChestFinder.EnsureOwner(opened))
+            if (player == null || opened == null || ChestFinder.IsDisposal(opened)
+                || !ChestFinder.CanUseOpened(opened, player) || !ChestFinder.EnsureOwner(opened))
                 return;
 
             ItemGroups.ReloadIfChanged();

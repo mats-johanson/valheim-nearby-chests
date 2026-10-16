@@ -17,6 +17,7 @@ namespace NearbyChests
 
         internal static ManualLogSource Log;
 
+        internal static ConfigEntry<bool> OnlyUseMarkedChests;
         internal static ConfigEntry<bool> IncludeCartsAndShips;
         internal static ConfigEntry<float> CraftingRange;
         internal static ConfigEntry<float> StackingRange;
@@ -53,6 +54,10 @@ namespace NearbyChests
         private void Awake()
         {
             Log = Logger;
+
+            OnlyUseMarkedChests = Config.Bind("General", "OnlyUseMarkedChests", false,
+                "Only use marked chests. Select Include in NearbyChests in a chest window to include it. " +
+                "Stack and Tidy show a message if the open chest is not marked. Disabling this restores normal chest eligibility.");
 
             IncludeCartsAndShips = Config.Bind("General", "IncludeCartsAndShips", false,
                 "Also use the storage in nearby carts and ships.");
@@ -138,6 +143,11 @@ namespace NearbyChests
             ParseUnassignedTypes();
             ItemGroups.Load();
             UnassignedItemTypes.SettingChanged += (_, __) => ParseUnassignedTypes();
+            OnlyUseMarkedChests.SettingChanged += (_, __) =>
+            {
+                ChestFinder.Invalidate();
+                ChestSelectionUI.Refresh(InventoryGui.instance);
+            };
             CraftingRange.SettingChanged += (_, __) => ChestFinder.Invalidate();
             StackingRange.SettingChanged += (_, __) => ChestFinder.Invalidate();
             IncludeCartsAndShips.SettingChanged += (_, __) => ChestFinder.Invalidate();
