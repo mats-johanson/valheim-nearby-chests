@@ -3,6 +3,25 @@
 Notable changes in each release. The section for a tagged version becomes that release's notes on
 GitHub, so keep the headings as `## <version> - <date>`.
 
+## 1.2.0 - 2026-10-16
+
+**Choose your chests.** New `OnlyUseMarkedChests` setting, off by default. Turn it on and each
+chest's window gets an **Include in NearbyChests** checkbox; only ticked chests are used for
+crafting, building, station feeding, Stack and Tidy. Stack or Tidy on an unticked chest shows a
+message. The tick is saved on the chest, so other players with the mod see it too.
+
+**Stack and tidy with one key.** New `StackAndTidyKey` setting, unbound by default. With no chest
+open, it stacks your inventory and then tidies every chest in stacking range, re-sorting each one.
+F16 to F24 work here and for `PullBuildMaterialsKey`, which Valheim's own key handling can't read.
+
+**Keep empty chests empty.** New `DontFillEmptyChests` setting, off by default. Stack and Tidy never
+start a new chest; items with no home stay with you.
+
+Thanks to [rattus-ratgirl](https://github.com/rattus-ratgirl) for all three.
+([#6](https://github.com/timothydodd/valheim-nearby-chests/pull/6),
+[#7](https://github.com/timothydodd/valheim-nearby-chests/pull/7),
+[#8](https://github.com/timothydodd/valheim-nearby-chests/pull/8))
+
 ## 1.1.2 - 2026-10-12
 
 **Stack and Tidy leave the Obliterator alone.** Pressing Place stacks with the Obliterator open could
