@@ -5,46 +5,33 @@ Client-side only: nobody else on the server needs it.
 
 ## What it does
 
-- **Craft and build from nearby chests.** Recipes, upgrades and hammer builds count materials in
-  chests within 30 m. What you carry is spent first, then the closest chests. Materials show what
-  you have next to what's needed (`312/5`), chests included.
-- **Feed stations from chests.** Coal and ore into smelters and kilns, wood into fires, fuel into
-  cooking stations. One press adds one item, the same as vanilla. Food and mead stay manual.
-- **Stack puts everything away.** Press **Stack** with a chest open, or hold **E** on a chest, and
-  each item goes to every nearby chest that already holds it. New items join a chest of similar
-  things (metals with metals, hides with hides, same biome), or take an empty chest. Chests that
-  received items get merged and sorted.
-- **Tidy a messy chest.** The three-bar icon left of *Place stacks* sends anything that doesn't
-  belong in the open chest to the right one, and pulls in strays that do belong.
-- **Ignore a slot.** Middle-click a slot in your inventory and Stack leaves it alone. A small pin
-  marks it. Middle-click again to clear. Marks are saved with your character.
-- **Pull build materials.** With a piece selected on your hammer, **Ctrl + left click** pulls its
-  materials from nearby chests into your inventory, so you can build out of range. Each press adds
-  one more piece's worth.
+- **Craft and build from your chests.** Anything within 30 m counts as if you were carrying it.
+- **Feed smelters, kilns and fires from your chests.** One press, one item, same as vanilla.
+- **Stack puts everything away.** Press **Stack** on any chest and each item goes to the chest it
+  already lives in. New items join similar things, or take an empty chest.
+- **Tidy a messy chest.** The three-bar icon next to *Place stacks* sends what doesn't belong to
+  the right chest, and pulls in what does.
+- **Ignore a slot.** Middle-click a slot in your inventory and Stack leaves it alone.
+- **Pull build materials.** **Ctrl + left click** with a piece selected on your hammer grabs its
+  materials from nearby chests.
+
+Your food, ammo, gear and hotbar stay with you. The Obliterator, gravestones, dungeon chests and
+other players' open chests are never touched.
 
 ![Inventory with pinned slots](https://raw.githubusercontent.com/timothydodd/valheim-nearby-chests/main/docs/ignored-slots.png)
 
-Your food, meads, ammo, equipment, hotbar and anything equipped stay with you. The Obliterator,
-gravestones, dungeon chests, chests another player has open and chests you can't open are never
-touched.
+## Optional, off by default
 
-## Settings
+Turn these on in `BepInEx\config\NearbyChests.cfg`:
 
-Settings are in `BepInEx\config\NearbyChests.cfg` after the first launch. The ones most people
-change:
+- **`StackAndTidyKey`**: one key stacks your inventory and tidies every chest in range.
+- **`OnlyUseMarkedChests`**: tick **Include in NearbyChests** in a chest window and only ticked
+  chests are used.
+- **`DontFillEmptyChests`**: Stack never starts a new chest on its own.
+- **`FallbackToAnyChest`**: items with no matching chest go into any chest with room.
 
-| Setting | Default | What it does |
-|---|---|---|
-| `CraftingRange` | 30 | How far a chest can be for crafting, building and pulling materials (3–60 m). |
-| `StackingRange` | 15 | How far a chest can be for Stack and Tidy (3–60 m). |
-| `IncludeCartsAndShips` | false | Also use cart and ship storage. |
-| `ExcludeFood`, `ExcludeAmmo`, `ExcludeEquipment` | true | Keep food, ammo and gear in your inventory when stacking. |
-| `KeepHotbar` | true | Never stack items from the top row. |
-| `FallbackToAnyChest` | false | Put items with no matching chest into any nearby chest with room, instead of leaving them with you. |
-| `PullBuildMaterialsKey` | Ctrl + left click | The key that pulls build materials. |
-
-Which items count as "similar" is a plain text file, `BepInEx\config\NearbyChests.groups.txt`, one
-line per group. Edits apply the next time you stack. Delete it to get the defaults back.
+Every setting, and the item groups file that decides what counts as "similar", is explained in the
+[full guide](https://robododd.com/nearby-chests/).
 
 ## Links
 
