@@ -31,7 +31,8 @@ namespace NearbyChests
 
         public static void TidyChest(Container opened) => TidyChest(opened, true);
 
-        internal static bool TidyChest(Container opened, bool showMessage)
+        /// <param name="nearby">Chests in stacking range, if the caller already has them; otherwise rescanned.</param>
+        internal static bool TidyChest(Container opened, bool showMessage, List<Container> nearby = null)
         {
             Player player = Player.m_localPlayer;
             if (player == null || opened == null || ChestFinder.IsDisposal(opened)
@@ -39,8 +40,12 @@ namespace NearbyChests
                 return false;
 
             ItemGroups.ReloadIfChanged();
-            ChestFinder.Invalidate();
-            var others = ChestFinder.GetNearby(player, Plugin.StackingRange.Value).Where(c => c != opened).ToList();
+            if (nearby == null)
+            {
+                ChestFinder.Invalidate();
+                nearby = ChestFinder.GetNearby(player, Plugin.StackingRange.Value);
+            }
+            var others = nearby.Where(c => c != opened).ToList();
 
             Inventory from = opened.GetInventory();
             var touched = new HashSet<Container>();
@@ -213,8 +218,7 @@ namespace NearbyChests
         /// <summary>Start a new chest for the item's group in the nearest empty chest.</summary>
         internal static int MoveToEmptyChest(ItemDrop.ItemData item, Inventory from,
             IEnumerable<Container> candidates, HashSet<Container> touched) =>
-            Plugin.DontFillEmptyChests.Value ? 0 :
-                MoveIntoFirst(item, from, candidates.Where(c => c.GetInventory().NrOfItems() == 0).ToList(), touched);
+            MoveIntoFirst(item, from, candidates.Where(c => c.GetInventory().NrOfItems() == 0).ToList(), touched);
 
         /// <summary>
         /// Add the item's group to a chest that holds only one other group, turning it into a shared
