@@ -1,0 +1,47 @@
+name: Bug report
+description: Something doesn't work as described.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: mod-version
+    attributes:
+      label: Nearby Chests version
+      description: From `BepInEx\LogOutput.log`, the line `Nearby Chests x.y.z loaded`.
+    validations:
+      required: true
+  - type: input
+    id: game-version
+    attributes:
+      label: Valheim version
+      description: Shown bottom-left of the main menu.
+    validations:
+      required: true
+  - type: textarea
+    id: mods
+    attributes:
+      label: Other mods installed
+      description: A list, or "none". Inventory and chest mods matter most.
+  - type: dropdown
+    id: multiplayer
+    attributes:
+      label: Where it happened
+      options:
+        - Single player
+        - Dedicated server
+        - Hosted by a friend
+        - Hosting for friends
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: BepInEx log
+      description: Attach or paste `BepInEx\LogOutput.log` from a session where the bug happened. Errors from the mod show up there.
+      render: text
