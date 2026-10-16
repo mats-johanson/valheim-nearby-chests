@@ -132,16 +132,13 @@ namespace NearbyChests
                     return moved;
             }
 
-            if (!Plugin.DontFillEmptyChests.Value)
+            foreach (Container c in chests)
             {
-                foreach (Container c in chests)
-                {
-                    if (c.GetInventory().NrOfItems() != 0)
-                        continue;
-                    moved += MoveInto(c, item, from, touched);
-                    if (!from.ContainsItem(item))
-                        return moved;
-                }
+                if (c.GetInventory().NrOfItems() != 0)
+                    continue;
+                moved += MoveInto(c, item, from, touched);
+                if (!from.ContainsItem(item))
+                    return moved;
             }
 
             if (Plugin.ShareChests.Value)
@@ -361,8 +358,9 @@ namespace NearbyChests
                 || __instance.m_currentContainer == null || ChestFinder.IsDisposal(__instance.m_currentContainer))
                 return true;
 
+            // With StackToNearby off the mark doesn't apply: vanilla's single-chest stack still works.
             if (!Plugin.StackToNearby.Value || Player.m_localPlayer.IsTeleporting())
-                return ChestFinder.CanUseOpened(__instance.m_currentContainer, Player.m_localPlayer);
+                return true;
 
             __instance.SetupDragItem(null, null, 1);
             Stacker.StackFromPlayer(__instance.m_currentContainer);
@@ -381,7 +379,7 @@ namespace NearbyChests
                 return true;
 
             if (!Plugin.StackToNearby.Value)
-                return ChestFinder.CanUseOpened(__instance, Player.m_localPlayer);
+                return true;
 
             Stacker.StackFromPlayer(__instance);
             return false;

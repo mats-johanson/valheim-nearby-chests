@@ -57,8 +57,10 @@ namespace NearbyChests
             Log = Logger;
 
             OnlyUseMarkedChests = Config.Bind("General", "OnlyUseMarkedChests", false,
-                "Only use marked chests. Select Include in NearbyChests in a chest window to include it. " +
-                "Stack and Tidy show a message if the open chest is not marked. Disabling this restores normal chest eligibility.");
+                "Only use chests you have marked: tick Include in NearbyChests in a chest's window. " +
+                "Applies to everything the mod does - crafting, upgrading and building counts, station feeding, " +
+                "build-material pulls, Stack and Tidy. Stack and Tidy show a message if the open chest isn't marked. " +
+                "Turn this off to go back to using every chest in range.");
 
             IncludeCartsAndShips = Config.Bind("General", "IncludeCartsAndShips", false,
                 "Also use the storage in nearby carts and ships.");
@@ -156,7 +158,11 @@ namespace NearbyChests
             };
             CraftingRange.SettingChanged += (_, __) => ChestFinder.Invalidate();
             StackingRange.SettingChanged += (_, __) => ChestFinder.Invalidate();
-            IncludeCartsAndShips.SettingChanged += (_, __) => ChestFinder.Invalidate();
+            IncludeCartsAndShips.SettingChanged += (_, __) =>
+            {
+                ChestFinder.Invalidate();
+                ChestSelectionUI.Refresh(InventoryGui.instance);
+            };
 
             _harmony = new Harmony(Guid);
             _harmony.PatchAll(typeof(Plugin).Assembly);
