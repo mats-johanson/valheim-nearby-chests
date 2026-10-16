@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Item in the wrong group
+    url: https://github.com/timothydodd/valheim-nearby-chests/issues/new?labels=groups&title=Item+group%3A+
+    about: An item lands in a chest it doesn't belong in. Name the item and where you think it should go.
