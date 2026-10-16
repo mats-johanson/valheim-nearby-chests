@@ -41,6 +41,10 @@ namespace NearbyChests
             return false;
         }
 
+        internal static bool IsUsable(Container c, Player player, float range) =>
+            player != null && IsUsable(c, player.transform.position, range * range,
+                Game.instance.GetPlayerProfile().GetPlayerID());
+
         /// <summary>Drop cached results so the next query rescans.</summary>
         public static void Invalidate()
         {

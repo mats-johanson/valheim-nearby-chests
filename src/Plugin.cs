@@ -27,6 +27,7 @@ namespace NearbyChests
         internal static ConfigEntry<bool> StationsFromChests;
         internal static ConfigEntry<bool> ShowAvailableCounts;
 
+        internal static ConfigEntry<KeyboardShortcut> StackAndTidyKey;
         internal static ConfigEntry<bool> StackToNearby;
         internal static ConfigEntry<bool> KeepHotbar;
         internal static ConfigEntry<bool> ExcludeFood;
@@ -81,6 +82,11 @@ namespace NearbyChests
             StackingRange = Config.Bind("Stacking", "StackingRange", 15f,
                 new ConfigDescription("How far (in meters) a chest can be and still be used by Stack, Tidy and sorting.",
                     new AcceptableValueRange<float>(3f, 60f)));
+            StackAndTidyKey = Config.Bind("Stacking", "StackAndTidyKey",
+                new KeyboardShortcut(KeyCode.None),
+                "Stack your inventory, then tidy each eligible chest within StackingRange once. " +
+                "Re-sorts every eligible chest in range, even if no items move. Works without opening a chest. None disables the shortcut. " +
+                "Independent of StackToNearby and TidyButton; respects chest and item restrictions.");
             StackToNearby = Config.Bind("Stacking", "StackToNearby", true,
                 "When you press the Stack button on an open chest, send your items to every nearby chest that already holds that item.");
             KeepHotbar = Config.Bind("Stacking", "KeepHotbar", true,
@@ -155,6 +161,59 @@ namespace NearbyChests
             _harmony = new Harmony(Guid);
             _harmony.PatchAll(typeof(Plugin).Assembly);
             Logger.LogInfo($"{ModName} {Version} loaded");
+        }
+
+        private void Update()
+        {
+            Player player = Player.m_localPlayer;
+            KeyboardShortcut shortcut = StackAndTidyKey.Value;
+            if (player == null || shortcut.MainKey == KeyCode.None || !player.TakeInput()
+                || !ShortcutKeyPressed(shortcut.MainKey, true))
+                return;
+            // Like BuildPull, allow movement keys alongside the configured modifiers.
+            foreach (KeyCode modifier in shortcut.Modifiers)
+            {
+                if (!ShortcutKeyPressed(modifier, false))
+                    return;
+            }
+
+            try
+            {
+                int stacked = Stacker.StackFromPlayer(null, false);
+                ChestFinder.Invalidate();
+                // Tidy rescans and mutates ChestFinder's shared list; keep our own ordered snapshot.
+                var chests = new List<Container>(ChestFinder.GetNearby(player, StackingRange.Value));
+                int tidied = 0;
+                foreach (Container chest in chests)
+                {
+                    if (ChestFinder.IsUsable(chest, player, StackingRange.Value)
+                        && Tidier.TidyChest(chest, false))
+                        tidied++;
+                }
+                player.Message(MessageHud.MessageType.Center, chests.Count == 0
+                    ? "No eligible nearby chests"
+                    : $"Stacked {stacked} items; tidied {tidied} {(tidied == 1 ? "chest" : "chests")}");
+            }
+            finally
+            {
+                ChestFinder.Invalidate();
+            }
+        }
+
+        internal static bool ShortcutKeyPressed(KeyCode key, bool down)
+        {
+            // Valheim rejects keycodes above 349, but Unity assigns F16-F24 values 670-678.
+            if (key >= KeyCode.F16 && key <= KeyCode.F24)
+            {
+                var keyboard = UnityEngine.InputSystem.Keyboard.current;
+                if (keyboard == null)
+                    return false;
+                var inputKey = (UnityEngine.InputSystem.Key)((int)UnityEngine.InputSystem.Key.F16
+                    + (int)key - (int)KeyCode.F16);
+                var control = keyboard[inputKey];
+                return down ? control.wasPressedThisFrame : control.isPressed;
+            }
+            return down ? ZInput.GetKeyDown(key) : ZInput.GetKey(key);
         }
 
         private void OnDestroy()

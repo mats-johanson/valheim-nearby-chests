@@ -29,12 +29,14 @@ namespace NearbyChests
         /// <summary>Category key for items that aren't in any group.</summary>
         internal const string Junk = "\u0001junk";
 
-        public static void TidyChest(Container opened)
+        public static void TidyChest(Container opened) => TidyChest(opened, true);
+
+        internal static bool TidyChest(Container opened, bool showMessage)
         {
             Player player = Player.m_localPlayer;
             if (player == null || opened == null || ChestFinder.IsDisposal(opened)
                 || !ChestFinder.CanUseOpened(opened, player) || !ChestFinder.EnsureOwner(opened))
-                return;
+                return false;
 
             ItemGroups.ReloadIfChanged();
             ChestFinder.Invalidate();
@@ -88,6 +90,9 @@ namespace NearbyChests
                 InventoryGui.instance.m_moveItemEffects.Create(c.transform.position, Quaternion.identity);
             }
 
+            if (!showMessage)
+                return true;
+
             var parts = new List<string>();
             if (moved > 0)
                 parts.Add($"sent out {moved}");
@@ -103,6 +108,7 @@ namespace NearbyChests
             if (parts.Count > 0 && stayed > 0)
                 message += $"\n{stayed} {(stayed == 1 ? "stack" : "stacks")} had nowhere else to go, so stayed";
             player.Message(MessageHud.MessageType.Center, message);
+            return true;
         }
 
         /// <summary>

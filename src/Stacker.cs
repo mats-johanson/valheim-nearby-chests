@@ -12,19 +12,23 @@ namespace NearbyChests
     /// </summary>
     internal static class Stacker
     {
-        public static void StackFromPlayer(Container opened)
+        public static void StackFromPlayer(Container opened) => StackFromPlayer(opened, true);
+
+        internal static int StackFromPlayer(Container opened, bool showMessage)
         {
             Player player = Player.m_localPlayer;
-            if (player == null || opened == null)
-                return;
-            if (!ChestFinder.CanUseOpened(opened, player))
-                return;
+            if (player == null)
+                return 0;
+            if (opened != null && !ChestFinder.CanUseOpened(opened, player))
+                return 0;
 
             Inventory playerInv = player.GetInventory();
 
             // The open chest gets first pick, then the rest nearest-first.
             ChestFinder.Invalidate();
-            var chests = new List<Container> { opened };
+            var chests = new List<Container>();
+            if (opened != null)
+                chests.Add(opened);
             foreach (Container c in ChestFinder.GetNearby(player, Plugin.StackingRange.Value))
             {
                 if (c != opened)
@@ -73,6 +77,11 @@ namespace NearbyChests
             foreach (Container c in touched)
                 InventoryGui.instance.m_moveItemEffects.Create(c.transform.position, Quaternion.identity);
 
+            if (moved > 0)
+                Game.instance.IncrementPlayerStat(PlayerStatType.PlaceStacks);
+            if (!showMessage)
+                return moved;
+
             string note = homeless == 0 ? ""
                 : Plugin.FallbackToAnyChest.Value ? $"\n{homeless} items didn't fit in any nearby chest"
                 : $"\n{homeless} items had no similar or empty chest";
@@ -80,12 +89,12 @@ namespace NearbyChests
             {
                 string where = touched.Count == 1 ? "1 chest" : touched.Count + " chests";
                 player.Message(MessageHud.MessageType.Center, $"Stacked {moved} items into {where}{note}");
-                Game.instance.IncrementPlayerStat(PlayerStatType.PlaceStacks);
             }
             else
             {
                 player.Message(MessageHud.MessageType.Center, note.Length > 0 ? note.TrimStart('\n') : "$msg_stackall_none");
             }
+            return moved;
         }
 
         /// <summary>
@@ -142,7 +151,7 @@ namespace NearbyChests
                     return moved;
             }
 
-            if (Plugin.FallbackToOpenChest.Value && ChestSelection.Allows(opened))
+            if (opened != null && Plugin.FallbackToOpenChest.Value && ChestSelection.Allows(opened))
             {
                 moved += MoveInto(opened, item, from, touched);
                 if (!from.ContainsItem(item))
