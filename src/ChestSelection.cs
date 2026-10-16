@@ -125,7 +125,15 @@ namespace NearbyChests
         internal static void ContainerChanged(InventoryGui gui)
         {
             // UpdateContainer runs every frame; only reread the mark when the chest changes.
-            if (ReferenceEquals(_container, gui.m_currentContainer)) return;
+            if (ReferenceEquals(_container, gui.m_currentContainer))
+            {
+                // On a server, ownership of the chest can arrive a frame or two after the window
+                // opens (vanilla checks IsOwner every frame for the same reason). Until the box is
+                // editable, keep checking so it doesn't stay greyed out.
+                if (_toggle != null && _toggle.gameObject.activeSelf && !_toggle.interactable)
+                    Refresh(gui);
+                return;
+            }
             _container = gui.m_currentContainer;
             ChestFinder.Invalidate();
             Refresh(gui);

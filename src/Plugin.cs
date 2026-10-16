@@ -187,13 +187,13 @@ namespace NearbyChests
             {
                 int stacked = Stacker.StackFromPlayer(null, false);
                 ChestFinder.Invalidate();
-                // Tidy rescans and mutates ChestFinder's shared list; keep our own ordered snapshot.
+                // One scan for the whole pass: tidying changes what chests hold, not which are in range.
                 var chests = new List<Container>(ChestFinder.GetNearby(player, StackingRange.Value));
                 int tidied = 0;
                 foreach (Container chest in chests)
                 {
                     if (ChestFinder.IsUsable(chest, player, StackingRange.Value)
-                        && Tidier.TidyChest(chest, false))
+                        && Tidier.TidyChest(chest, false, chests))
                         tidied++;
                 }
                 player.Message(MessageHud.MessageType.Center, chests.Count == 0

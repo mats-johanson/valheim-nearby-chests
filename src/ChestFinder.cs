@@ -18,11 +18,7 @@ namespace NearbyChests
         private static Vector3 _cachedPos;
         private static float _cachedRange = -1f;
 
-        public static void Register(Container container)
-        {
-            if (Known.Add(container))
-                Invalidate();
-        }
+        public static void Register(Container container) => Known.Add(container);
 
         internal static bool CanUseOpened(Container c, Player player)
         {

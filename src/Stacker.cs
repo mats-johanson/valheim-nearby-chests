@@ -262,8 +262,6 @@ namespace NearbyChests
         /// <summary>Move as much of <paramref name="item"/> as fits into the chest. Returns the count moved.</summary>
         internal static int MoveInto(Container chest, ItemDrop.ItemData item, Inventory from, HashSet<Container> touched)
         {
-            if (!ChestSelection.Allows(chest))
-                return 0;
             Inventory to = chest.GetInventory();
             if (Plugin.DontFillEmptyChests.Value && to.NrOfItems() == 0)
                 return 0;
