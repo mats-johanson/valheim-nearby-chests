@@ -67,6 +67,16 @@ chests for you.
    to carry somewhere out of range. Each press adds enough for one more piece on top of what you
    already carry, and the click doesn't place anything. The on-screen message says what was pulled,
    and what the chests were short of.
+9. **Stack and tidy with one key.** Set `StackAndTidyKey` and pressing it, with no chest open, stacks
+   your inventory and then tidies every chest in stacking range. Off by default. It re-sorts every
+   chest in range, even ones that received nothing.
+10. **Choose which chests the mod may use.** Turn on `OnlyUseMarkedChests` and an **Include in
+    NearbyChests** checkbox appears in each chest's window. Only ticked chests count, for crafting,
+    building, station feeding, Stack and Tidy alike. Stack or Tidy on an unticked chest shows a
+    message instead. The mark is saved on the chest itself, so it's shared with other players who
+    have the mod. Off by default.
+11. **Keep empty chests empty.** Turn on `DontFillEmptyChests` and Stack and Tidy never start a new
+    chest; items with no home stay with you. Putting things in by hand still works. Off by default.
 
 Stacking leaves these in your inventory. Each has its own setting, and all are on by default:
 - **Food, meads and potions:** anything cooked, baked, crafted or brewed. Edible things you pick or
@@ -84,6 +94,7 @@ already holds go in), and the Tidy button is hidden there.
 - Dungeon loot chests.
 - Chests another player has open.
 - Chests you can't open yourself (private, or behind someone else's ward).
+- Chests you haven't ticked, when `OnlyUseMarkedChests` is on.
 
 Crafting and stacking have separate ranges: `CraftingRange` (30 m) covers crafting, upgrading and
 building, while `StackingRange` (15 m) covers Stack, Tidy and sorting, so putting things away only
@@ -127,7 +138,7 @@ After the first launch, settings are in `BepInEx\config\NearbyChests.cfg`:
 
 | Section  | Setting              | Default          | What it does |
 |----------|----------------------|------------------|--------------|
-
+| General  | OnlyUseMarkedChests  | false            | Only use chests you've ticked **Include in NearbyChests** on. Applies to crafting, building, station feeding, Stack and Tidy. |
 | General  | IncludeCartsAndShips | false            | Also use cart and ship storage. |
 | Crafting | CraftingRange        | 30               | Distance in meters a chest can be and still be used for crafting, upgrading and building (3–60). |
 | Crafting | CraftFromChests      | true             | Use chest materials at crafting stations. |
@@ -135,11 +146,13 @@ After the first launch, settings are in `BepInEx\config\NearbyChests.cfg`:
 | Crafting | StationsFromChests   | true             | Take fuel and ore from chests when feeding smelters, kilns, fires and cooking stations. Food and mead stay manual. |
 | Crafting | ShowAvailableCounts  | true             | Show materials as have/needed in the crafting panel and build menu, counting nearby chests. |
 | Stacking | StackingRange        | 15               | Distance in meters a chest can be and still be used by Stack, Tidy and sorting (3–60). |
+| Stacking | StackAndTidyKey      | None             | Key (with modifiers) that stacks your inventory and tidies every chest in range, with no chest open. Re-sorts every chest in range. |
 | Stacking | StackToNearby        | true             | Stack button pushes to all nearby chests. Turn off for the vanilla button. |
 | Stacking | KeepHotbar           | true             | Never stack items from the top row. |
 | Stacking | ExcludeFood          | true             | Never stack food, meads or potions (anything cooked, crafted or brewed). Raw ingredients still stack. |
 | Stacking | ExcludeAmmo          | true             | Never stack arrows, bolts, bait or other ammo. |
 | Stacking | ExcludeEquipment     | true             | Never stack weapons, armor, shields, tools, torches, utility items or trinkets. |
+| Stacking | DontFillEmptyChests  | false            | Never put items into a completely empty chest automatically. Filling it by hand still works. |
 | Stacking | PlaceUnassignedItems | true             | Items with no home go to a chest of similar items, or an empty chest. |
 | Stacking | UnassignedItemTypes  | Material,Trophy  | Item types placed even when not in the groups file. They share the catch-all chest. Other options: Consumable, Ammo, AmmoNonEquipable, Fish, Misc. |
 | Stacking | FallbackToOpenChest  | false            | If there's no similar or empty chest, use the open chest instead of leaving items in your inventory. |
@@ -256,6 +269,18 @@ merges into one chest and can't bounce back on the next tidy.
 A chest holding exactly two groups keeps its second group when there's no better home, so shared
 chests don't bounce items back and forth. A junk chest never passes items on to another junk chest,
 and uncategorized items never become a shared chest's second group.
+
+**Marked chests** (`ChestSelection.cs`) store the tick as a boolean in the chest's own ZDO, so it
+saves with the world and syncs to other players through the game's normal networking, with no
+server mod. It's only written while the chest is open, when the game has already given you
+ownership. The checkbox is added to the chest window in an `InventoryGui.Awake` postfix and reread
+only when the open chest changes, not every frame. With the option on, `ChestFinder` skips unticked
+chests, and the open chest is checked before Stack or Tidy runs.
+
+**The stack-and-tidy key** runs from the plugin's `Update` while the player can take input (no
+menu, chat or chest open). It stacks with no open chest, so the open-chest fallback doesn't apply,
+then tidies each chest in stacking range nearest-first. Valheim's input layer ignores keycodes above
+349, so F16 to F24 are read through Unity's input system directly.
 
 **Food detection:** an item counts as food when it's a `Consumable` that the game can produce, meaning
 it's the output of an `ObjectDB` recipe or of a `CookingStation` (including ovens), `Fermenter` or

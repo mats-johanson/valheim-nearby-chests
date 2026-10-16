@@ -19,8 +19,9 @@ namespace NearbyChests
             if (c == null || c.m_nview == null || !c.m_nview.IsValid() || c.GetInventory() == null
                 || ChestFinder.IsDisposal(c))
                 return false;
-            return c.m_wagon != null || c.GetComponentInParent<Ship>() != null
-                || (c.m_piece != null && c.m_piece.IsPlacedByPlayer());
+            if (c.m_wagon != null || c.GetComponentInParent<Ship>() != null)
+                return Plugin.IncludeCartsAndShips.Value;
+            return c.m_piece != null && c.m_piece.IsPlacedByPlayer();
         }
 
         internal static bool CanEdit(InventoryGui gui, Container c)
@@ -110,6 +111,8 @@ namespace NearbyChests
             _toggle = row.GetComponent<Toggle>();
             _toggle.targetGraphic = background;
             _toggle.graphic = checkImage;
+            // Default (automatic) navigation leaves it reachable on a gamepad. Refresh deactivates the
+            // whole row when OnlyUseMarkedChests is off, which also removes it from navigation.
             _toggle.onValueChanged.AddListener(value =>
             {
                 Container c = __instance.m_currentContainer;
